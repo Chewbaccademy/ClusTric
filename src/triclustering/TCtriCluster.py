@@ -8,7 +8,9 @@
 #        Adapted from       triCluster (Zhao and Zaki)                 #
 #                                                                      #
 ########################################################################
-
+# for self typing in class
+#! Must be at the beginning of the file
+from __future__ import annotations
 from collections import namedtuple
 import copy
 import itertools
@@ -18,6 +20,9 @@ Name = namedtuple("Name", "name")
 
 
 def fZero(f: float):
+    """
+    Fonction to approximate 0 (return 0 if value < 0.0000001)
+    """
     return abs(f) < 0.0000001
 
 
@@ -31,6 +36,7 @@ class Ratio:
         self.f1Neg = None
 
     def __lt__(self, other):
+        """Function less than"""
         return self.val < other.val
 
 
@@ -46,19 +52,31 @@ class Array3D:
         self.gName = [None] * self.G
 
     def dat(self, t: int, s: int, g: int):
+        """
+        To access to a specific data of the 3D Array (Array[t,s,g])
+        """
         return self._data[(t, s, g)]
         # return self._data[t*(S*G)+s*G+g] ???
 
     def setdat(self, t: int, s: int, g: int, val):
+        """
+        Modify a specific value of 3D Array
+        """
         self._data[(t, s, g)] = val
 
     def clear(self):
+        """
+        delete all fields of 3D Array
+        """
         del self._data
         del self.tName
         del self.sName
         del self.gName
 
     def show(self):
+        """
+        Display 3D Array
+        """
         print("Total Times:\t", self.T)
         print("Total Samples:\t", self.S)
         print("Total Genes:\t", self.G)
@@ -84,8 +102,12 @@ class Array3D:
 
 
 class TabInput:
+    """
+    A module to read a formatted file (seems like csv with tab separator aka tsv)
+    """
     def open(self, file):
         self._filePointer = open(file, 'r')
+
 
     def close(self):
         self._filePointer.close()
@@ -96,7 +118,9 @@ class TabInput:
         self.k = 0
 
     def get2tab(self):
-        p = 0
+        """
+        Parse a csv tab (get one value of a line of csv)
+        """
         if self._line[self.k] == '\t' or self._line[self.k] == '\n':
             self._sub += ''
             if self._line[self.k] == '\t':
@@ -104,7 +128,6 @@ class TabInput:
         else:
             while True:
                 self._sub += self._line[self.k]
-                #p += 1
                 self.k += 1
                 if not (self._line[self.k] != '\t' and self._line[self.k] != '\n' and self.k < len(self._line)):
                     break
@@ -117,13 +140,18 @@ class TabInput:
 
 
 class Input:
+    """
+    Module to construct a 3D Array from a formatted file (csv with tab)
+    """
 
     def __init__(self, filename):
         self._file = filename
         self._in = TabInput()
 
-    def readTabFile(self):
-
+    def readTabFile(self) -> Array3D:
+        """
+        Construct a 3D Array from a formatted file (csv with tab)
+        """
         self._in.open(self._file)
 
         self._in.getLine()
@@ -183,6 +211,9 @@ class Input:
 
 
 class Rect:
+    """
+    Represents a 2D slice of a 3D Cube
+    """
     def __init__(self):
         self.deleted = False
         self.S = SortedSet()
@@ -192,10 +223,7 @@ class Rect:
         self.G.clear()
         self.S.clear()
 
-    def contain(self, r):
-        """
-            r is type of Rect
-        """
+    def contain(self, r:Rect):
         if len(self.S) < len(r.S) or len(self.G) < len(r.G):
             return False
 
@@ -210,10 +238,11 @@ class Rect:
         return True
 
     def copy(self, r):
-        #r = Rect()
         self.S = copy.deepcopy(r.S)
         self.G = copy.deepcopy(r.G)
         self.deleted = copy.deepcopy(r.deleted)
+
+
 
     def containPoint(self, s: int, g: int):
         if s not in self.S:
@@ -223,6 +252,9 @@ class Rect:
         return True
 
     def elementNum(self):
+        """
+        Returns the numbzer of elements in the Rect object
+        """
         return len(self.S) * len(self.G)
 
     def show(self, array3d: Array3D, T: int):
@@ -241,7 +273,9 @@ class Rect:
 
 
 class Rects:
-
+    """
+    Represents a list of Rects
+    """
     def __init__(self):
         self.rectVec = list()
 
@@ -269,6 +303,9 @@ class Rects:
             self.rectVec.append(r)
 
     def validNum(self):
+        """
+        Returns the number of non deleted Rects
+        """
         num = 0
         for rec in self.rectVec:
             if not rec.deleted:
@@ -288,7 +325,9 @@ class Rects:
 
 
 class Cube:
-
+    """
+    Represents a 3D data object (is a specific Array3D)
+    """
     def __init__(self):
         self.T = SortedSet()
         self.S = SortedSet()
@@ -336,7 +375,7 @@ class Cube:
 
         return True
 
-    def containPoint(self, t: int, s: int, g: int):
+    def containPoint(self, t:int, s:int, g:int):
         if t not in self.T:
             return False
         if s not in self.S:
@@ -346,6 +385,9 @@ class Cube:
         return True
 
     def elementNum(self):
+        """
+        Returns the number of elements (points) in the cube
+        """
         return len(self.T) * len(self.S) * len(self.G)
 
     def show(self, array3d: Array3D):
@@ -372,6 +414,9 @@ class Cube:
         return sFinal
 
     def variance(self, dimension, array3d):
+        """
+        Compute the variance of a dimension of the Cube
+        """
         ave = 0.0
         sum = 0.0
         SUM = 0.0
@@ -393,7 +438,7 @@ class Cube:
                 ave = 0.0
                 for i3 in it3:
                     if dimension == 'T':
-                        ave += round(array3d.dat(i3, i1, i2), 2)
+                        ave += round(array3d.dat(i3, i1, i2),2)
                     elif dimension == 'S':
                         ave += round(array3d.dat(i1, i3, i2), 2)
                     else:
@@ -435,6 +480,9 @@ class Cube:
 
 
 class Cubes:
+    """
+    Represents a list of Cube
+    """
     def __init__(self):
         self._cubeVec = list()
 
@@ -443,13 +491,13 @@ class Cubes:
             cub.clear()
         self._cubeVec.clear()
 
-    def contain(self, c: Cube):
+    def contain(self, c:Cube):
         for cub in self._cubeVec:
             if cub.contain(c):
                 return True
         return False
 
-    def del_becontained(self, c: Cube):
+    def del_becontained(self, c:Cube):
         to_remove = list()
         for cub in self._cubeVec:
             if c.contain(cub):
@@ -461,7 +509,7 @@ class Cubes:
         for c in to_remove:
             self._cubeVec.remove(c)
 
-    def addIfMax(self, c: Cube):
+    def addIfMax(self, c:Cube):
         if not self.contain(c):
             self.del_becontained(c)
             self._cubeVec.append(c)
@@ -488,7 +536,7 @@ class Cubes:
 
         return sFinal
 
-    def delet(self, overlaped: float):
+    def delet(self, overlaped:float):
 
         for c in self._cubeVec:
             inc = 0
@@ -506,7 +554,10 @@ class Cubes:
             if inc/total >= overlaped:
                 c.deleted = True
 
-    def merge(self, overlaped: float):
+    def merge(self, overlaped:float):
+        """
+        Merge Cube objects if the overlap between them is higher than the threshold "overlaped"
+        """
         cont = True
 
         noMerge = False
@@ -517,8 +568,7 @@ class Cubes:
             it3 = len(self._cubeVec)
             it1 = 0
             while it1 < it3:
-                it2 = it1
-                it2 += 1
+                it2 = it1 + 1
                 while it2 < it3:
 
                     if not self._cubeVec[it1].deleted and not self._cubeVec[it2].deleted:
@@ -595,31 +645,32 @@ class Cubes:
         return sFinal
 
 
-class Cluster:
-
-    def __init__(self, array3d: Array3D, cubes: Cubes):
+class Cluster: 
+    """
+    Represents a TCTriClustering solution
+    """
+    def __init__(self, array3d:Array3D, cubes:Cubes):
         self._pArray3d = array3d
         self._width = array3d.S
         self._height = array3d.G
         self._edgesMatrix = [list() for _ in range(
             self._width**2)]  # list of list of sets
-        self._pRects = [Rects() for _ in range(array3d.T)]  # list of Rects
+        self._pRects = [Rects() for _ in range(array3d.T)]  # list of Rects (1 by time point)
         self._pCubes = cubes
+
 
     def EDGE(self, i, j):
         return self._edgesMatrix[i*self._width+j]
 
-    def EDGE_push(self, i, j, val: set):
+    def EDGE_push(self, i, j, val:set):
         self._edgesMatrix[i*self._width+j].append(val)
 
     def EDGE_clear(self, i, j):
         self._edgesMatrix[i*self._width+j].clear()
 
-    def getRects(self, T: int, rects: Rects, winsz: float, support: list, eDelta: list, ivn: list):
+    def getRects(self, T:int, rects:Rects, winsz:float, support:list[float], eDelta:list[float], ivn:list[float]):
         """
-        ivn: List of float
-        eDelta: List of float
-        support: List of float
+        get biclusters for a specific timepoint
         """
         r = Rect()
         P = SortedSet()
@@ -627,8 +678,6 @@ class Cluster:
         edges = 0
 
         self.getRanges(T, winsz, support[2], ivn)
-
-        # print(self._edgesMatrix)
 
         i = 0
         while i < width-1:
@@ -655,7 +704,7 @@ class Cluster:
                 j += 1
             i += 1
 
-    def compare_genes(self, g_array, g_rect, ss_rect, winsz, T: int):
+    def compare_genes(self, g_array, g_rect, ss_rect, winsz, T:int):
         cont = 0
         for s_r in ss_rect:
             val_rect = self._pArray3d.dat(T, s_r, g_rect)
@@ -665,6 +714,9 @@ class Cluster:
         return cont
 
     def verify_all_missings(self, rect, T):
+        """
+        Check if an entire bicluster is equal to 0
+        """
         for s in rect.S:
             for g in rect.G:
                 if self._pArray3d.dat(T, s, g) != 0:
@@ -672,14 +724,19 @@ class Cluster:
         return True
 
     def count_mv(self, g_array, ss_rect, T):
+        """
+        Count number of 0 values in a Gene at a Timepoint (for all Samples)
+        """
         cont = 0
         for s in ss_rect:
             if fZero(self._pArray3d.dat(T, s, g_array)):
                 cont += 1
         return cont
 
-    def handle_missings(self, rects: Rects, minG: int, winsz: float, T: int, mthr: float):
-
+    def handle_missings(self, rects:Rects, minG:int, winsz:float, T:int, mthr:float):
+        """
+        Soft delete biclusters if maximum Gene missing values is reached
+        """
         for r in rects.rectVec:
             i = 0
             while i < self._pArray3d.G:
@@ -693,24 +750,30 @@ class Cluster:
             if len(r.G) < minG or self.verify_all_missings(r, T):
                 r.deleted = True
 
-    def getCubes(self, winsz: float, support: list, eDelta: list, ivn: list, mthr: float):
+    def getCubes(self, winsz:float, support:list[float], eDelta:list[float], ivn:list[float], mthr: float):
+        """
+        winsz: ratio of windows
+        support: Cluster minimum size in [Time, Sample (Individual), Genes (Features)]
+        eDelta: Maximum distance of Time, Samples or Genes
+        ivn: list of values not to include in biclusters
+        mthr: Maximum missing values rate by bicluster (between 0 and 1)
+        """
         c = Cube()
         P = SortedSet()
         width = self._pArray3d.T
 
         i = 0
+        # get all biclusters through time points i
         while i < width:
             self.getRects(i, self._pRects[i], winsz, support, eDelta, ivn)
 
-            # CODE ABOUT MISSING DATA ## HERE ## FOR EACH BIC IN TRIC
-
             self.handle_missings(self._pRects[i], support[0], winsz, i, mthr)
 
-            # print(self._pRects[i].show(self._pArray3d, i))
             print("Biclusters got at this time: ", self._pRects[i].validNum())
             i += 1
+        ##Ends Biclustering
 
-        # Ends Biclustering
+
         i = 0
         while i < width:
             P.add(i)
@@ -718,10 +781,11 @@ class Cluster:
 
         self.EXPAND_T(self._pCubes, c, P, support, eDelta)
 
-    def EXPAND_T(self, cubes: Cubes, c: Cube, P: set, support: list, eDelta: list):
+
+    def EXPAND_T(self, cubes:Cubes, c:Cube, P:set, support:list, eDelta:list):
         """
-        eDelta: List of float
-        support: List of float
+        support: Cluster minimum size in [Time, Sample (Individual), Genes (Features)]
+        eDelta: Maximum distance of Time, Samples or Genes
         """
         minT = support[0]
         minS = support[1]
@@ -731,14 +795,15 @@ class Cluster:
         if len(c.T) >= minT and len(c.S) >= minS and len(c.G) >= minG:
             if (eDelta[0] < 0.0 or c.variance('T', self._pArray3d) <= eDelta[0]) and \
                 (eDelta[1] < 0.0 or c.variance('S', self._pArray3d) <= eDelta[1]) and \
-                    (eDelta[2] < 0.0 or c.variance('G', self._pArray3d) <= eDelta[2]):
+                (eDelta[2] < 0.0 or c.variance('G', self._pArray3d) <= eDelta[2]):
                 cubes.addIfMax(c)
+
 
         while len(P) > 0:
             x = P[0]
             c1.copy(c)
             P.remove(x)
-            if len(c1.T) == 0 or c1.T[-1] + 1 == x:  # RESTRIÇÃO TEMPORAL
+            if len(c1.T) == 0 or c1.T[-1] + 1 == x: ###################################### TEMPORAL CONTIGUOS CONSTRAINT
                 c1.T.add(x)
                 if len(c.T) == 0:
                     print("Processing Time: ", x)
@@ -760,7 +825,9 @@ class Cluster:
                             c.T = ctemp.T
                             c.G = ctemp.G
 
-    def EXPAND(self, rects: Rects, r: Rect, P, support: list, eDelta: list):
+
+
+    def EXPAND(self, rects:Rects, r:Rect, P, support:list, eDelta:list):
         minS = support[1]
         minG = 1
         r1 = Rect()
@@ -774,7 +841,7 @@ class Cluster:
             r1.S.add(x)
             P.remove(x)
 
-            if len(r.S) == 0:  # empty
+            if len(r.S) == 0: # empty
                 if not BRIEF_OUT:
                     print("Processing Sample: ", x)
                 self.EXPAND(rects, r1, copy.deepcopy(P), support, eDelta)
@@ -794,11 +861,17 @@ class Cluster:
                         r.G = rtemp.G
                         r.S = rtemp.S
 
-    def getRanges(self, T: int, winsz: float, gSup: int, ivn: list):
+
+
+
+
+    def getRanges(self, T:int, winsz:float, gSup:int, ivn:list[float]):
         """
-        ivn: List of float
+        winsz: ratio of windows
+        gSup: Cluster minimum size in Sample (Individual)
+        ivn: list of values not to include in biclusters
         """
-        ratioVec = list()  # List of Ratio
+        ratioVec = list() # List of Ratio
         win_size = 1.0 + winsz
         sSet = SortedSet()
         sSet1 = SortedSet()
@@ -811,11 +884,9 @@ class Cluster:
                 k = 0
                 while k < self._height:
                     flag = True
-                    # print('i', self._pArray3d.dat(T, i, k))
-                    # print('j', self._pArray3d.dat(T, j, k))
                     if not (fZero(self._pArray3d.dat(T, i, k)) or fZero(self._pArray3d.dat(T, j, k))):
                         for iit in ivn:
-                            if (fZero(iit - self._pArray3d.dat(T, i, k)) or fZero(iit - self._pArray3d.dat(T, k, k))):
+                            if (fZero(iit - self._pArray3d.dat(T, i, k)) or fZero(iit - self._pArray3d.dat(T, k, k))): #? Not dat(T, j, k) ?
                                 flag = False
                                 break
                         if flag:
@@ -926,9 +997,9 @@ if __name__ == "__main__":
     array3d = None
     cubes = None
 
-    support = [None] * 3  # INT       0:T, 1:S, 2:G
-    showClusters = [False] * 3  # BOOL  0:T, 1:S, 2:G
-    eDelta = [0] * 3  # FLOAT       0:T, 1:S, 2:G
+    support = [None] * 3 # INT       0:T, 1:S, 2:G
+    showClusters = [False] * 3 # BOOL  0:T, 1:S, 2:G
+    eDelta = [0] * 3 # FLOAT       0:T, 1:S, 2:G
     invalidNum = list()
 
     win_size = 0.03
@@ -1023,6 +1094,8 @@ if __name__ == "__main__":
     print("Deletion Threshold:\t", del_overlap)
     print("Merging  Threshold:\t", mer_overlap)
     print("Missing Values  Threshold:\t", mv_threshold)
+
+
 
     if not fZero(eDelta[0]+1.0):
         print("delta-T:\t\t", eDelta[0])

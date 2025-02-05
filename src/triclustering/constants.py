@@ -19,13 +19,13 @@ def get_config(config_file):
     global RESULTS_DIR_TRIC
     global TRAJECTORY_DIR
     global VISUALIZATION_DIR
-    global TOP_FOLDER
-    global DATA_FILE
-    global MIN_APP
+    global TOP_FOLDER # output folder path
+    global DATA_FILE # csv file containing data
+    global MIN_APP # minimum number of appointments
     global SNAPSHOTS_FILE
-    global N_CLUST
-    global REF_FEATURE
-    global INCLUDE_STATIC
+    global N_CLUST # number of clusters
+    global REF_FEATURE # feature to identify each patient (patient_id)
+    global INCLUDE_STATIC # boolean : True if we include static data, False otherwise
 
     BASELINE_DIR_S = TOP_FOLDER + "baselines/static/"
     BASELINE_DIR_T = TOP_FOLDER + "baselines/temporal/"
