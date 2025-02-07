@@ -89,7 +89,7 @@ def df_to_dict(data:pd.DataFrame, discretize_prog_rate=False) -> dict:
     return final_dict
 
 def compute_consecutive_snapshots_n(data:dict, n:int, label:str, yes_label:str='Y') -> dict:
-    """Je ne sais pas encore
+    """Build snapshots of n timepoints
 
     -------
     parameters:
@@ -103,10 +103,20 @@ def compute_consecutive_snapshots_n(data:dict, n:int, label:str, yes_label:str='
 
     ------
     output dict format:
-
+    ```
+    {
+        1: [ # patient_id
+            (0, 'Y'), # snapshot_id and target value of the snapshot
+            (1, 'Y'),
+            ...
+        ]
+        ...
+    }
+    ```
     """
 
     # filters out patient with too few appointments (number of appointments < n)
+    #? final is not used ??
     final = dict()
     for (p, t) in data.items(): # loop through patients
         if len(t.keys()) >= n:
@@ -115,9 +125,10 @@ def compute_consecutive_snapshots_n(data:dict, n:int, label:str, yes_label:str='
                 fd[key] = val
                 final[p] = fd #? I think this is one tab too far
 
+    # build snapshots
     snaps = dict()
-    for (p, ts) in data.items():
-        for t in ts.keys():
+    for (p, ts) in data.items(): # loop through patients
+        for t in ts.keys(): # loop through timepoints of the patient
 
             size_t = len(ts.keys())
             size_n = n
@@ -128,7 +139,18 @@ def compute_consecutive_snapshots_n(data:dict, n:int, label:str, yes_label:str='
                                 for j in range(0, size_n)])
     return snaps
 
-def create_matrix_temporal(data, sps, n) -> tuple[pd.DataFrame, list]:
+def create_matrix_temporal(data:dict, sps:dict, n:int) -> tuple[pd.DataFrame, list]:
+    """Je ne sais pas encore
+
+    -----
+    parameters:
+    - data: is a dict with ALS data with the format returned by `df_to_dict`
+    - sps: is a dict of snapshots returned by `compute_consecutive_snapshots_n`
+    - n: is the number of consecutive snapshots to consider, ie. the size of snapshots set. the size of snapshots set could be defined 
+
+    -----
+    Output format :
+    """
     y = list()
     values = list()
     cols = list()

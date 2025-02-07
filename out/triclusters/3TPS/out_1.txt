@@ -1,0 +1,12 @@
+src/triclustering/TCtriCluster.py -f out/tab_files/3TPS/TAB_3TPS.tab -sT 2 -sS 1 -sG 1 -w 0.01 -o 1 -mv 0.5
+
+Input File Name:	 out/tab_files/3TPS/TAB_3TPS.tab
+Cluster Minimum Size:	T: 2 , S: 1 , G: 1
+Ratio Window Size:	 0.01
+Deletion Threshold:	 1.0
+Merging  Threshold:	 1.0
+Missing Values  Threshold:	 0.5
+
+
+Time  0 : Got  1525  edges, Average edges:  3.8125
+Processing Sample:  0

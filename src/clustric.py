@@ -3,8 +3,10 @@ import pandas as pd
 import subprocess
 import triclustering.constants as constants
 import sys
+import datetime
 
 if __name__ == "__main__":
+    program_start = datetime.datetime.now()
     constants.get_config(sys.argv[1])
     n = constants.MIN_APP
     #create longitudinal tables
@@ -15,12 +17,18 @@ if __name__ == "__main__":
     #create triclustering representations
     cmd = "python3 src/triclustering/main.py {} {}".format(n,sys.argv[1])
     print(cmd)
-    subprocess.call(cmd, shell=True)   
+    subprocess.call(cmd, shell=True)
+    triclustering_end = datetime.datetime.now()
+    triclustering_duration:datetime.timedelta = triclustering_end - program_start
+    print(f"Duration for triclustering : {triclustering_duration}")
 
     #find the clusters in data
     print('*** CLUSTERING ***')
     data, patients, filtered_patients = parse_data()
     labels = hierarchical_clustering(data)
+    clustering_end = datetime.datetime.now()
+    clustering_duration:datetime.timedelta = clustering_end - program_start
+    print(f"Duration for clustering : {clustering_duration}")
 
 
     #visualize the representations
@@ -39,3 +47,6 @@ if __name__ == "__main__":
     for i in range(constants.N_CLUST):
         clusters.append(patients.loc[patients['Labels'] == i])
     simple_trajectories(clusters) 
+    visualisation_end = datetime.datetime.now()
+    visualisation_duration:datetime.timedelta = visualisation_end - program_start
+    print(f"Duration for visualisation : {visualisation_duration}")

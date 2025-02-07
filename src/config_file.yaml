@@ -1,0 +1,38 @@
+DATA_FILE: "src/example_dataset_trics.csv"
+TOP_FOLDER: "out/"
+N_CLUST: 3
+MIN_APP: 3
+REF_FEATURE: "individual_id"
+INCLUDE_STATIC: False
+STATIC_FEATURES: {
+                  'Gender':'categorical',
+                  'Age_onset':'continuos',
+                  'UMNvsLMN':'categorical',
+                  'C9orf72':'categorical',
+                  'BMI_at_1st_visit': continuos,
+                  'Diagnostic Delay': continuos,
+                  'Onset_form': 'categorical'
+                }
+
+TEMPORAL_FEATURES: {
+                  'Y0':'categorical',
+                  'Y1':'categorical',
+                  'Y2':'categorical',
+                  'Y3':'categorical',
+                  'Y4':'categorical',
+                  'Y5':'categorical',
+                  'Y6':'categorical',
+                  'Y7':'categorical',
+                  'Y8':'categorical',
+                  'Y9':'categorical',
+                  'Y10':'categorical',
+                  'Y11':'categorical',
+                  'Y12':'categorical',
+                  'Y13':'categorical',
+                  'Y14':'categorical',
+                  'Y15':'categorical',
+                  'Y16':'categorical',
+                  'Y17':'categorical',
+                  'Y18':'categorical',
+                  'Y19':'categorical'
+                  }
