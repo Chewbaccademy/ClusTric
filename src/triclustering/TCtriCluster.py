@@ -484,7 +484,7 @@ class Cubes:
     Represents a list of Cube
     """
     def __init__(self):
-        self._cubeVec = list()
+        self._cubeVec:list[Cube] = list()
 
     def clear(self):
         for cub in self._cubeVec:
