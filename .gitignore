@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 
 out/
+src/example_dataset_trics.csv
