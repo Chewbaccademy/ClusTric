@@ -49,7 +49,7 @@ def write_tab_file_temp(df, file_name, features, tps):
             for index, row in sub_feat.iterrows():
 
                 t_string = "{}\t"*(len(fs)+2)
-                tupl = (index, "G-" + str(index)) + \
+                tupl = (index, row["Patient_ID"]) + \
                     tuple(map(lambda x: row[x], fs))
                 line = t_string.format(*tupl)
                 out.write(line + '\n')
